@@ -104,6 +104,8 @@ int parseArgs(char* arg1, char* arg2)
     if (colored != 1 || graphics != 1)
         return EXIT_FAILURE;
 
+    /*if (!isatty(1)) // remove comments if your OS does not support pseudo-graphics
+    	graphics = 0 */
     return EXIT_SUCCESS;
 }
 
@@ -118,7 +120,7 @@ char* concatination(const char* fst, const char* sst)
 	return name_with_extension;
 }
 
-
+//recursive function to print tree
 void print_tree(char * path, char * line)
 {
 	DIR * d = opendir(path); // open the path
@@ -132,7 +134,7 @@ void print_tree(char * path, char * line)
 	struct dirent * dir; // for the directory entries
 	while ((dir = readdir(d)) != NULL) // if we were able to read something from the directory
 	{
-		if(dir-> d_type != DT_DIR) // if the type is not directory just print it with blue
+		if(dir-> d_type != DT_DIR) // if the type is not directory
 		{
 			char* name_with_extension = concatination(concatination(path,"/"), dir->d_name);
 			struct stat statOffile;
@@ -161,7 +163,7 @@ void print_tree(char * path, char * line)
 					printf("%s%s%s\n",line, getLine(0), dir->d_name);
 				else
 					printf("%s%s%s%s%s\n",line, getLine(0), GREEN, dir->d_name, NORMAL_COLOR); // print its name in green
-				char d_path[255]; // here I am using sprintf which is safer than strcat
+				char d_path[255];
 				sprintf(d_path, "%s/%s", path, dir->d_name);
 				print_tree(d_path,newline); // recall with the new path & line
 			}
@@ -170,6 +172,7 @@ void print_tree(char * path, char * line)
 
 }
 
+//choses the color
 char* ftypeColor(struct stat *sb)
 {
 	unsigned int i = (*sb).st_mode;
@@ -194,6 +197,7 @@ char* ftypeColor(struct stat *sb)
 	}
 }
 
+//returns the number of files in a directory
 size_t FilesCount(DIR * dir)
 {
 	size_t count = 0;
@@ -207,6 +211,7 @@ size_t FilesCount(DIR * dir)
 	return count;
 }
 
+//returns a line represented by pseudo-graphics or standart symbols
 char* getLine(unsigned int type)
 {
 	if (graphics)
